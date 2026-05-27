@@ -11,15 +11,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Xml.Linq;
-using Barotrauma.PerkBehaviors;
+using Barotrauma.ServerSource;
 
 namespace Barotrauma.Networking
 {
-    sealed class GameServer : NetworkMember
+     sealed class GameServer : NetworkMember
     {
         public override bool IsServer => true;
         public override bool IsClient => false;
-
+        private PluginLoader pluginLoader;
+        public static GameServer ServerInstance { get; private set; }
         public override Voting Voting { get; }
 
         public string ServerName
@@ -196,12 +197,16 @@ namespace Barotrauma.Networking
             this.ownerEndpoint = ownerEndpoint;
 
             entityEventManager = new ServerEntityEventManager(this);
+
+            pluginLoader = new PluginLoader();
+            pluginLoader.LoadAllPlugins();
         }
 
         public void StartServer(bool registerToServerList)
         {
-            Log("Starting the server...", ServerLog.MessageType.ServerMessage);
 
+            Log("Starting the server...", ServerLog.MessageType.ServerMessage);
+   
             var callbacks = new ServerPeer.Callbacks(
                 ReadDataMessage,
                 OnClientDisconnect,
@@ -229,6 +234,10 @@ namespace Barotrauma.Networking
                         DebugConsole.NewMessage($"Steam registering skipped due to error (and probably more of it was printed above): {e.Message}");
                     }
                     Eos.EosSessionManager.UpdateOwnedSession(Option.None, ServerSettings);
+                }
+                if (pluginLoader != null)
+                {
+                    pluginLoader.OnServerStart();
                 }
             }
 
@@ -260,6 +269,8 @@ namespace Barotrauma.Networking
             started = true;
 
             GameAnalyticsManager.AddDesignEvent("GameServer:Start");
+            ServerInstance = this;
+
         }
 
 
@@ -2739,6 +2750,10 @@ namespace Barotrauma.Networking
 
             CoroutineManager.StartCoroutine(InitiateStartGame(selectedSub, selectedEnemySub, selectedShuttle, selectedMode), "InitiateStartGame");
             yield return CoroutineStatus.Success;
+            if (pluginLoader != null)
+            {
+                pluginLoader.OnServerStart();
+            }
         }
 
         private IEnumerable<CoroutineStatus> InitiateStartGame(SubmarineInfo selectedSub, Option<SubmarineInfo> selectedEnemySub, SubmarineInfo selectedShuttle, GameModePreset selectedMode)
@@ -3183,7 +3198,10 @@ namespace Barotrauma.Networking
             GameMain.GameScreen.Select();
 
             Log("Round started.", ServerLog.MessageType.ServerMessage);
-
+            if (pluginLoader != null)
+            {
+                pluginLoader.OnRoundStart();
+            }
             GameStarted = true;
             initiatedStartGame = false;
             GameMain.ResetFrameTime();
@@ -3344,6 +3362,10 @@ namespace Barotrauma.Networking
 
         public void EndGame(CampaignMode.TransitionType transitionType = CampaignMode.TransitionType.None, bool wasSaved = false, IEnumerable<Mission> missions = null)
         {
+            if (pluginLoader != null)
+            {
+                pluginLoader.OnRoundEnd();
+            }
             if (GameStarted)
             {
                 if (GameSettings.CurrentConfig.VerboseLogging)
@@ -4759,9 +4781,14 @@ namespace Barotrauma.Networking
         }
 
         public void Quit()
-        {            
+        {
+            if (pluginLoader != null)
+            {
+                pluginLoader.OnServerStop();
+            }
             if (started)
             {
+
                 started = false;
 
                 ServerSettings.BanList.Save();
@@ -4980,6 +5007,8 @@ namespace Barotrauma.Networking
             }
             pvpAutoBalanceCountdownRemaining = -1;
         }
+
+
     }
 
     class PreviousPlayer

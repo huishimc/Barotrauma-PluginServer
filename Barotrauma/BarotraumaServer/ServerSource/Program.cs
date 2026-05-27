@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using Barotrauma.Debugging;
 using Barotrauma.Networking;
+using Barotrauma.ServerSource;
 #if LINUX
 using System.Runtime.InteropServices;
 #endif
@@ -22,6 +23,18 @@ namespace Barotrauma
     /// </summary>
     public static class Program
     {
+        private static IBarotraumaAPI api;
+        public static IBarotraumaAPI API
+        {
+            get
+            {
+                if (api == null)
+                {
+                    api = new BarotraumaAPI();
+                }
+                return api;
+            }
+        }
 #if LINUX
         /// <summary>
         /// Sets the required environment variables for the game to initialize Steamworks correctly.
@@ -64,6 +77,10 @@ namespace Barotrauma
                 GameMain.ShouldRun = false;
             };
 #endif
+
+            PluginLoader loader = new PluginLoader();
+            loader.LoadAllPlugins();
+
             Console.WriteLine("Barotrauma Dedicated Server " + GameMain.Version +
                 " (" + AssemblyInfo.BuildString + ", branch " + AssemblyInfo.GitBranch + ", revision " + AssemblyInfo.GitRevision + ")");
             if (Console.IsOutputRedirected)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Barotrauma.ServerSource;
 
 namespace Barotrauma.Networking
 {
@@ -64,6 +65,17 @@ namespace Barotrauma.Networking
             else
             {
                 txt = msg.ReadString() ?? "";
+                Console.WriteLine($"[ChatMessage] 收到普通消息: {txt} 来自 {c.Name}");
+                if (!string.IsNullOrEmpty(txt) && txt.StartsWith("/"))
+                {
+                    Console.WriteLine($"[ChatMessage] 检测到命令，交给 CommandManager 处理");
+                    if (NetIdUtils.IdMoreRecent(ID, c.LastSentChatMsgID))
+                    {
+                        c.LastSentChatMsgID = ID;
+                    }
+                    if (CommandManager.TryExecute(c, txt))
+                        return;
+                }
             }
 
             // Sanitize incoming text message from client so they can't use RichString features
