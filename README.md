@@ -1,3 +1,42 @@
+# Barotrauma Plugin Server
+
+**Enable Barotrauma server to dynamically load .dll plugins, original client can join without any modifications**
+
+This is a **server plugin system** modified from Barotrauma's official source code. You can add custom features to your server without modifying the client.
+
+---
+
+## Features in Progress
+
+| Feature | Implemented |
+|------|------|
+| Dynamic .dll plugin loading | ✅ |
+| Lifecycle events | ✅ |
+| Chat command registration | ✅ |
+| Console command registration | ❌ |
+| Player system | ✅ |
+| API interface | ✅ |
+| Client needs to install Mod | No |
+
+I don't know what else to implement, suggestions are welcome🤓
+
+---
+
+## Quick Start
+
+### Server Installation
+
+1. Download `DedicatedServer.dll` from Releases
+2. Backup your original `DedicatedServer.dll`
+3. Replace the file in your server directory
+4. Create a `Plugins` folder in the same directory as your server exe (will be created automatically on first startup)
+5. Place your plugin `.dll` files into the `Plugins` folder
+6. Start the server
+
+### Plugin Development
+
+I'm writing a simple tutorial
+
 # Barotrauma
 
 Copyright © FakeFish Ltd 2017-2026
