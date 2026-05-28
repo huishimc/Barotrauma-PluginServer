@@ -1,6 +1,6 @@
 # Barotrauma Plugin Server
 
-**中文**https://github.com/huishimc/Barotrauma-PluginServer/blob/master/README.zh-CN.md
+[中文](./README.zh-CN.md) | English
 
 **Enable Barotrauma server to dynamically load .dll plugins, original client can join without any modifications**
 
