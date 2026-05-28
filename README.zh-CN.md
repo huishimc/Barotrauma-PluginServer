@@ -1,5 +1,7 @@
 # Barotrauma Plugin Server
 
+中文 | [English](./README.md)
+
 **让潜渊症服务端支持动态加载 .dll 插件，客户端原版即可进入**
 
 这是一个基于 Barotrauma 官方源码修改的**服务端插件系统**。你可以在不修改客户端的情况下，为你的服务器添加各种自定义功能。
