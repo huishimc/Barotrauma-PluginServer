@@ -37,7 +37,7 @@
 
 ### 开发插件
 
-我正在写一个简易教程
+[developer documentation](https://github.com/huishimc/Barotrauma-PluginServer/wiki/%E5%BC%80%E5%8F%91%E8%80%85%E6%96%87%E6%A1%A3)
 
 # Barotrauma
 
